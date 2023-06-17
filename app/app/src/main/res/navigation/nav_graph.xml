@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/loginFragment">
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.example.n_ai_tupeu.fragments.LoginFragment"
+        android:label="Login"
+        tools:layout="@layout/fragment_login">
+
+        <action
+            android:id="@+id/action_loginFragment_to_registerFragment"
+            app:destination="@id/registerFragment" />
+        <action
+            android:id="@+id/action_loginFragment_to_gameFragment"
+            app:destination="@id/gameFragment" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/registerFragment"
+        android:name="com.example.n_ai_tupeu.fragments.RegisterFragment"
+        android:label="Register"
+        tools:layout="@layout/fragment_register">
+
+        <action
+            android:id="@+id/action_registerFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/gameFragment"
+        android:name="com.example.n_ai_tupeu.fragments.GameFragment"
+        android:label="Game"
+        tools:layout="@layout/fragment_game">
+
+        <action
+            android:id="@+id/action_gameFragment_to_addQuestionsFragment"
+            app:destination="@id/addQuestionsFragment" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/addQuestionsFragment"
+        android:name="com.example.n_ai_tupeu.fragments.AddQuestionsFragment"
+        android:label="Add Questions"
+        tools:layout="@layout/fragment_add_questions" />
+
+    <action
+        android:id="@+id/action_addQuestionsFragment_to_gameFragment"
+        app:destination="@id/gameFragment" />
+
+</navigation>
