@@ -1,26 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/registerFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.RegisterFragment"
-    android:id="@+id/registerFragment">
+    android:background="@android:color/white"
+    tools:context=".fragments.RegisterFragment">
 
-    <LinearLayout
+    <ImageView
+        android:id="@+id/logoImageView"
+        android:layout_width="200dp"
+        android:layout_height="150dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="100dp"
+        android:src="@drawable/register_logo" />
+
+    <View
+        android:id="@+id/spacingView"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:layout_below="@id/logoImageView" />
+
+    <EditText
+        android:id="@+id/usernameEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="50dp"
+        android:layout_marginEnd="50dp"
+        android:layout_below="@id/spacingView"
+        android:hint="Username"
+        android:inputType="text"
+        android:padding="10dp" />
+
+    <EditText
+        android:id="@+id/passwordEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="50dp"
+        android:layout_marginEnd="50dp"
+        android:layout_below="@id/usernameEditText"
+        android:hint="Password"
+        android:inputType="textPassword"
+        android:padding="10dp" />
+
+    <Button
+        android:id="@+id/registerButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="50dp"
+        android:layout_marginEnd="50dp"
+        android:layout_below="@id/passwordEditText"
+        android:layout_marginTop="30dp"
+        android:background="@color/design_default_color_on_primary"
+        android:text="Register"
+        android:textColor="@android:color/white" />
+
+    <TextView
+        android:id="@+id/loginTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/registerButton"
+        android:layout_marginTop="20dp"
+        android:text="Already have an account?"
+        android:textColor="@android:color/black" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="registerFragment" />
+    <Button
+        android:id="@+id/goToLoginButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/loginTextView"
+        android:layout_marginTop="10dp"
+        android:text="Sign in"
+        android:textColor="@color/design_default_color_on_primary" />
 
-        <Button
-            android:id="@+id/registerButton"
-            android:layout_width="110dp"
-            android:layout_height="50dp"
-            android:text="Register" />
-    </LinearLayout>
-
-</FrameLayout>
+</RelativeLayout>

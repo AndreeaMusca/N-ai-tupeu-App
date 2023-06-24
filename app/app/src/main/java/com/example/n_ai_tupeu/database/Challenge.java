@@ -4,24 +4,32 @@ import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+import java.util.UUID;
+
+import java.util.Objects;
 
 @Entity(tableName = "challenge")
 public class Challenge {
+
     @PrimaryKey
     @NonNull
-    private String challenge;
+    private UUID id;
+    @NonNull
+    private String question;
 
     @ColumnInfo(name = "type")
     private String type;
 
     @ColumnInfo(name = "idUser")
-    private int idUser;
+    private String idUser;
 
-    public Challenge(String challenge, String type, int idUser) {
-        this.challenge = challenge;
+    public Challenge(@NonNull String question, String type, String idUser) {
+        id=UUID.randomUUID();
+        this.question = question;
         this.type = type;
-        this.idUser=idUser;
+        this.idUser = idUser;
     }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -32,27 +40,39 @@ public class Challenge {
         }
         Challenge other = (Challenge) obj;
         // Compare the properties of the challenges that make them equal
-        return idUser == other.idUser && challenge.equals(other.challenge) && type.equals(other.type);
+        return Objects.equals(idUser, other.idUser) && question.equals(other.question) && type.equals(other.type);
     }
+
+
     @NonNull
-    public String getChallenge() {
-        return challenge;
+    public String getQuestion() {
+        return question;
     }
-    public void setChallenge(@NonNull String challenge) {
-        this.challenge = challenge;
+
+    public void setQuestion(@NonNull String question) {
+        this.question = question;
     }
 
     public String getType() {
         return type;
     }
+
     public void setType(String type) {
         this.type = type;
     }
 
-    public int getIdUser() {
+    public String getIdUser() {
         return idUser;
     }
-    public void setIdUser(int idUser) {
+
+    public void setIdUser(String idUser) {
         this.idUser = idUser;
+    }
+
+    @NonNull
+    public UUID getId() {return id;}
+
+    public void setId(@NonNull UUID id) {
+        this.id = id;
     }
 }

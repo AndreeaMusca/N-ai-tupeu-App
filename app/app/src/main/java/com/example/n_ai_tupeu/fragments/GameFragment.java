@@ -2,21 +2,25 @@ package com.example.n_ai_tupeu.fragments;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
+
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+
 import com.example.n_ai_tupeu.R;
 import com.example.n_ai_tupeu.RecyclerViewAdapter;
 import com.example.n_ai_tupeu.database.Challenge;
 import com.example.n_ai_tupeu.database.ChallengeDatabase;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,13 +31,13 @@ public class GameFragment extends Fragment {
     private List<Challenge> lista;
     private List<Challenge> truths;
     private List<Challenge> dares;
-    private ChallengeDatabase animalDatabase;
-    String t2="";
-    private int idUser=37;
+    private ChallengeDatabase challengeDatabase;
+    private final String idUser = "37";
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        animalDatabase = Room.databaseBuilder(requireContext(),
+        challengeDatabase = Room.databaseBuilder(requireContext(),
                         ChallengeDatabase.class, "challenge-database")
                 .build();
 
@@ -43,11 +47,12 @@ public class GameFragment extends Fragment {
 
         displayDatabase(); // Load data from Room
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View view= inflater.inflate(R.layout.fragment_game, container, false);
+        View view = inflater.inflate(R.layout.fragment_game, container, false);
         Button addQuestionsButton = view.findViewById(R.id.goToAddQuestionsButton);
 
         addQuestionsButton.setOnClickListener(new View.OnClickListener() {
@@ -59,8 +64,7 @@ public class GameFragment extends Fragment {
         recyclerView = view.findViewById(R.id.recycler_view);
 
 
-
-        adapter = new RecyclerViewAdapter(lista, animalDatabase,2);
+        adapter = new RecyclerViewAdapter(lista, challengeDatabase, 2);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         recyclerView.setAdapter(adapter);
 
@@ -68,11 +72,11 @@ public class GameFragment extends Fragment {
         Button dareButton = view.findViewById(R.id.dareButton);
         Button randomButton = view.findViewById(R.id.randomButton);
 
-        if(truths.isEmpty())
+        if (truths.isEmpty())
             truthButton.setEnabled(false);
-        if(dares.isEmpty())
+        if (dares.isEmpty())
             dareButton.setEnabled(false);
-        if(lista.isEmpty())
+        if (lista.isEmpty())
             randomButton.setEnabled(false);
 
         truthButton.setOnClickListener(new View.OnClickListener() {
@@ -83,7 +87,7 @@ public class GameFragment extends Fragment {
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
                     builder.setTitle("Truth")
-                            .setMessage(randomChallenge.getChallenge())
+                            .setMessage(randomChallenge.getQuestion())
                             .setPositiveButton("Done", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
@@ -124,7 +128,7 @@ public class GameFragment extends Fragment {
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
                     builder.setTitle("Dare")
-                            .setMessage(randomChallenge.getChallenge())
+                            .setMessage(randomChallenge.getQuestion())
                             .setPositiveButton("Done", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
@@ -161,54 +165,52 @@ public class GameFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-            Challenge randomChallenge = lista.get((int) (Math.random() * lista.size()));
+                Challenge randomChallenge = lista.get((int) (Math.random() * lista.size()));
 
-            AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-            builder.setTitle(randomChallenge.getType())
-                    .setMessage(randomChallenge.getChallenge())
-                    .setPositiveButton("Done", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+                builder.setTitle(randomChallenge.getType())
+                        .setMessage(randomChallenge.getQuestion())
+                        .setPositiveButton("Done", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
 
-                            if(randomChallenge.getType().equals("Dare"))
-                            {
-                                dares.remove(randomChallenge);
-                                if (dares.isEmpty()) {
-                                    dareButton.setEnabled(false);
+                                if (randomChallenge.getType().equals("Dare")) {
+                                    dares.remove(randomChallenge);
+                                    if (dares.isEmpty()) {
+                                        dareButton.setEnabled(false);
+                                    }
+                                } else {
+                                    truths.remove(randomChallenge);
+                                    if (truths.isEmpty()) {
+                                        truthButton.setEnabled(false);
+                                    }
                                 }
-                            }
-                            else
-                            {
-                                truths.remove(randomChallenge);
-                                if (truths.isEmpty()) {
-                                    truthButton.setEnabled(false);
+
+                                lista.remove(randomChallenge);
+                                if (lista.isEmpty()) {
+                                    showGameEndedDialog();
+                                    dareButton.setEnabled(true);
+                                    truthButton.setEnabled(true);
+                                    randomButton.setEnabled(true);
                                 }
-                            }
 
-                            lista.remove(randomChallenge);
-                            if (lista.isEmpty()) {
-                                showGameEndedDialog();
-                                dareButton.setEnabled(true);
-                                truthButton.setEnabled(true);
-                                randomButton.setEnabled(true);
+                                adapter.notifyDataSetChanged();
                             }
-
-                            adapter.notifyDataSetChanged();
-                        }
-                    })
-                    .setNegativeButton("Skipped", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            // Close the dialog
-                            dialog.dismiss();
-                        }
-                    })
-                    .create()
-                    .show();
-        }
+                        })
+                        .setNegativeButton("Skipped", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                // Close the dialog
+                                dialog.dismiss();
+                            }
+                        })
+                        .create()
+                        .show();
+            }
         });
         return view;
     }
+
     private void showGameEndedDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle("Game Ended")
@@ -233,9 +235,9 @@ public class GameFragment extends Fragment {
                 lista.clear();
                 truths.clear();
                 dares.clear();
-                lista.addAll(animalDatabase.challengeDao().getAllChallengesByUser(idUser));
-                truths.addAll(animalDatabase.challengeDao().getAllTruthChallengesByUser(idUser));
-                dares.addAll(animalDatabase.challengeDao().getAllDareChallengesByUser(idUser));
+                lista.addAll(challengeDatabase.challengeDao().getAllChallengesByUser(idUser));
+                truths.addAll(challengeDatabase.challengeDao().getAllTruthChallengesByUser(idUser));
+                dares.addAll(challengeDatabase.challengeDao().getAllDareChallengesByUser(idUser));
                 requireActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -245,6 +247,7 @@ public class GameFragment extends Fragment {
             }
         }).start();
     }
+
     private void navigateToAddQuestions() {
         NavHostFragment.findNavController(this)
                 .navigate(R.id.action_gameFragment_to_addQuestionsFragment);

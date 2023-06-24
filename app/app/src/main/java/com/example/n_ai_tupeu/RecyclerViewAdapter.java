@@ -23,7 +23,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public RecyclerViewAdapter(List<Challenge> dataList, ChallengeDatabase challengeDatabase, int page) {
         this.dataList = dataList;
         this.challengeDatabase = challengeDatabase;
-        this.page=page;
+        this.page = page;
     }
 
     @NonNull
@@ -36,7 +36,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        String data = dataList.get(position).getChallenge();
+        String data = dataList.get(position).getQuestion();
         holder.type.setText(data);
         data = dataList.get(position).getType();
         holder.challenge.setText(data);

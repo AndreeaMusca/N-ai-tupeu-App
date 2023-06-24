@@ -38,15 +38,15 @@
         android:textSize="24sp"
         android:textStyle="bold" />
 
-        <Button
-            android:id="@+id/goToAddQuestionsButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Add Questions"
-            android:backgroundTint="@color/button_background_color"
-            android:textColor="@color/button_text_color"
-            android:textSize="24sp"
-            android:textStyle="bold" />
+    <Button
+        android:id="@+id/goToAddQuestionsButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Add Questions"
+        android:backgroundTint="@color/button_background_color"
+        android:textColor="@color/button_text_color"
+        android:textSize="24sp"
+        android:textStyle="bold" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"

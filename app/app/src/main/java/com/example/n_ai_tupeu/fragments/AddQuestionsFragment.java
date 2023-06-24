@@ -33,9 +33,9 @@ public class AddQuestionsFragment extends Fragment implements RadioGroup.OnCheck
     private List<Challenge> challenges;
     private ChallengeDatabase challengeDatabase;
     RadioGroup radioGroup;
-    String t2="";
+    String t2 = "";
 
-    private int idUser=37;
+    private String idUser = "37";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -45,6 +45,7 @@ public class AddQuestionsFragment extends Fragment implements RadioGroup.OnCheck
                         ChallengeDatabase.class, "challenge-database")
                 .build();
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -57,7 +58,7 @@ public class AddQuestionsFragment extends Fragment implements RadioGroup.OnCheck
         mButton = view.findViewById(R.id.addButton);
         t1 = view.findViewById(R.id.text1);
         recyclerView = view.findViewById(R.id.recycler_view);
-        radioGroup=(RadioGroup) view.findViewById(R.id.challenge_group);
+        radioGroup = (RadioGroup) view.findViewById(R.id.challenge_group);
         radioGroup.setOnCheckedChangeListener(this);
 
         challenges = new ArrayList<>();
@@ -70,7 +71,7 @@ public class AddQuestionsFragment extends Fragment implements RadioGroup.OnCheck
         mButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (t1.getText().toString().trim().isEmpty() || t2=="") {
+                if (t1.getText().toString().trim().isEmpty() || t2 == "") {
                     AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
                     builder.setMessage("Unul dintre fielduri e gol.");
                     builder.setTitle("Alert !");
@@ -108,7 +109,7 @@ public class AddQuestionsFragment extends Fragment implements RadioGroup.OnCheck
                     adapter.notifyDataSetChanged();
                     t1.setText("");
                     radioGroup.clearCheck();
-                 }
+                }
             }
         });
 
@@ -157,6 +158,7 @@ public class AddQuestionsFragment extends Fragment implements RadioGroup.OnCheck
             }
         }).start();
     }
+
     private void insertChallenge(Challenge challenge) {
         new Thread(new Runnable() {
             @Override
@@ -171,14 +173,16 @@ public class AddQuestionsFragment extends Fragment implements RadioGroup.OnCheck
             }
         }).start();
     }
+
     private boolean existChallenge(Challenge challenge) {
         for (Challenge obj : challenges) {
-            if (obj.getChallenge().equalsIgnoreCase(challenge.getChallenge())) {
+            if (obj.getQuestion().equalsIgnoreCase(challenge.getQuestion())) {
                 return true;
             }
         }
         return false;
     }
+
     private void displayDatabase() {
         new Thread(new Runnable() {
             @Override
@@ -194,6 +198,7 @@ public class AddQuestionsFragment extends Fragment implements RadioGroup.OnCheck
             }
         }).start();
     }
+
     private void navigateToGame() {
         NavHostFragment.findNavController(this)
                 .navigate(R.id.action_addQuestionsFragment_to_gameFragment);
@@ -201,14 +206,13 @@ public class AddQuestionsFragment extends Fragment implements RadioGroup.OnCheck
 
     @Override
     public void onCheckedChanged(RadioGroup group, int checkedId) {
-        switch (checkedId)
-        {
+        switch (checkedId) {
             case R.id.radioButton_dare:
-                t2="Dare";
+                t2 = "Dare";
                 break;
 
             case R.id.radioButton_truth:
-                t2="Truth";
+                t2 = "Truth";
                 break;
         }
     }
