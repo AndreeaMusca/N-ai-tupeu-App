@@ -18,12 +18,12 @@ public class Challenge {
     private String question;
 
     @ColumnInfo(name = "type")
-    private String type;
+    private ChallengeType.Type type;
 
     @ColumnInfo(name = "idUser")
     private String idUser;
 
-    public Challenge(@NonNull String question, String type, String idUser) {
+    public Challenge(@NonNull String question, ChallengeType.Type type, String idUser) {
         id=UUID.randomUUID();
         this.question = question;
         this.type = type;
@@ -53,11 +53,11 @@ public class Challenge {
         this.question = question;
     }
 
-    public String getType() {
+    public ChallengeType.Type getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(ChallengeType.Type type) {
         this.type = type;
     }
 

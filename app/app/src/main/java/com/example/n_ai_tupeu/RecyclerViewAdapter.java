@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.n_ai_tupeu.database.Challenge;
 import com.example.n_ai_tupeu.database.ChallengeDatabase;
+import com.example.n_ai_tupeu.database.ChallengeType;
 
 import java.util.List;
 
@@ -36,12 +37,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        String data = dataList.get(position).getQuestion();
-        holder.type.setText(data);
-        data = dataList.get(position).getType();
-        holder.challenge.setText(data);
+        Challenge challenge = dataList.get(position);
 
-        if (data.equalsIgnoreCase("Dare")) {
+        holder.type.setText(challenge.getQuestion());
+        holder.challenge.setText(challenge.getType().toString());
+
+        if (challenge.getType() == ChallengeType.Type.Dare) {
             holder.itemView.setBackgroundResource(R.drawable.gradient_background_dare);
         } else {
             holder.itemView.setBackgroundResource(R.drawable.gradient_background_truth);
@@ -53,8 +54,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 @Override
                 public void onClick(View v) {
                     int adapterPosition = holder.getAdapterPosition();
-                    Challenge animalToDelete = dataList.get(adapterPosition);
-                    deleteAnimal(animalToDelete);
+                    Challenge challengeToDelete = dataList.get(adapterPosition);
+                    deleteChallenge(challengeToDelete);
                     dataList.remove(adapterPosition);
                     notifyItemRemoved(adapterPosition);
                 }
@@ -64,7 +65,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         }
     }
 
-    private void deleteAnimal(Challenge challenge) {
+    private void deleteChallenge(Challenge challenge) {
         new Thread(() -> {
             challengeDatabase.challengeDao().deleteChallenge(challenge);
         }).start();

@@ -17,16 +17,6 @@ namespace GameAPI.Services
             _accounts = database.GetCollection<Account>(settings.AccountsCollectionName);
         }
 
-
-        public async Task<bool> Create(string username, string password)
-        {
-            var model=new Account(username, password);
-
-            await _accounts.InsertOneAsync(model);
-
-            return true;
-        }
-
         public async Task<bool> Create(Account model)
         {
             await _accounts.InsertOneAsync(model);

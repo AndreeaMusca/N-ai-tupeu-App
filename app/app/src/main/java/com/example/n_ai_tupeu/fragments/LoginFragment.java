@@ -7,14 +7,11 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -24,20 +21,14 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.n_ai_tupeu.R;
-import com.example.n_ai_tupeu.RecyclerViewAdapter;
 import com.example.n_ai_tupeu.SecondActivity;
-import com.example.n_ai_tupeu.database.Challenge;
-import com.example.n_ai_tupeu.database.ChallengeDatabase;
 import com.example.n_ai_tupeu.helpers.Constants;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.List;
-
 
 public class LoginFragment extends Fragment {
-    private int idUser;
     private EditText usernameEditText;
     private EditText passwordEditText;
 
@@ -81,8 +72,8 @@ public class LoginFragment extends Fragment {
         // Create a JSON object to hold the username and password
         JSONObject jsonBody = new JSONObject();
         try {
-            jsonBody.put("username", username);
-            jsonBody.put("password", password);
+            jsonBody.put(Constants.USERNAME, username);
+            jsonBody.put(Constants.PASSWORD, password);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -98,6 +89,7 @@ public class LoginFragment extends Fragment {
                 } catch (JSONException e) {
                     throw new RuntimeException(e);
                 }
+                saveLogState();
                 Intent intent = new Intent(getActivity(), SecondActivity.class);
                 startActivity(intent);
                 getActivity().finish();
@@ -119,6 +111,12 @@ public class LoginFragment extends Fragment {
         SharedPreferences sharedPreferences = requireContext().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("userId", id);
+        editor.apply();
+    }
+    private void saveLogState(){
+        SharedPreferences sharedPreferences = requireContext().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean("state", true);
         editor.apply();
     }
 

@@ -7,11 +7,14 @@ import androidx.room.Query;
 import androidx.room.Update;
 
 import java.util.List;
+import java.util.UUID;
 
 @Dao
 public interface ChallengeDao {
     @Insert
     void insertChallenge(Challenge challenge);
+    @Insert
+    void insertAllChallenges(List<Challenge> challenges);
 
     @Update
     void updateChallenge(Challenge challenge);
@@ -28,9 +31,9 @@ public interface ChallengeDao {
     @Query("DELETE FROM Challenge")
     void deleteAllChallenges();
 
-    @Query("SELECT * FROM Challenge WHERE type = 'Dare' AND idUser = :userId")
+    @Query("SELECT * FROM Challenge WHERE type ='2' AND idUser = :userId")
     List<Challenge> getAllDareChallengesByUser(String userId);
 
-    @Query("SELECT * FROM Challenge WHERE type = 'Truth' AND idUser = :userId")
+    @Query("SELECT * FROM Challenge WHERE type = '1' AND idUser = :userId")
     List<Challenge> getAllTruthChallengesByUser(String userId);
 }

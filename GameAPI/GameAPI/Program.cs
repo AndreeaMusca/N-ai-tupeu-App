@@ -16,6 +16,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton<IAccountCollectionService, AccountCollectionService>();
+builder.Services.AddSingleton<IChallengeCollectionService, ChallengeCollectionService>();
 
 var app = builder.Build();
 

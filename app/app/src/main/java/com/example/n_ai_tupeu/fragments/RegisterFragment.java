@@ -72,8 +72,8 @@ public class RegisterFragment extends Fragment {
 
         JSONObject requestObject = new JSONObject();
         try {
-            requestObject.put("username", username);
-            requestObject.put("password", password);
+            requestObject.put(Constants.USERNAME, username);
+            requestObject.put(Constants.PASSWORD, password);
         } catch (JSONException e) {
             e.printStackTrace();
         }

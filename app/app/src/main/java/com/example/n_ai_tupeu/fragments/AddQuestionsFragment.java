@@ -1,6 +1,8 @@
 package com.example.n_ai_tupeu.fragments;
 
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AlertDialog;
@@ -21,26 +23,26 @@ import com.example.n_ai_tupeu.R;
 import com.example.n_ai_tupeu.RecyclerViewAdapter;
 import com.example.n_ai_tupeu.database.Challenge;
 import com.example.n_ai_tupeu.database.ChallengeDatabase;
+import com.example.n_ai_tupeu.database.ChallengeType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class AddQuestionsFragment extends Fragment implements RadioGroup.OnCheckedChangeListener {
-    private Button mButton;
-    private EditText t1;
-    private RecyclerView recyclerView;
+    private EditText challengeText;
     private RecyclerViewAdapter adapter;
     private List<Challenge> challenges;
     private ChallengeDatabase challengeDatabase;
     RadioGroup radioGroup;
-    String t2 = "";
+    ChallengeType.Type challengeType;
 
-    private String idUser = "37";
+    private String idUser;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Initialize the AnimalDatabase
+        // Initialize the ChallengesDatabase
         challengeDatabase = Room.databaseBuilder(requireContext(),
                         ChallengeDatabase.class, "challenge-database")
                 .build();
@@ -55,9 +57,9 @@ public class AddQuestionsFragment extends Fragment implements RadioGroup.OnCheck
 
         backToGameButton.setOnClickListener(v -> navigateToGame());
 
-        mButton = view.findViewById(R.id.addButton);
-        t1 = view.findViewById(R.id.text1);
-        recyclerView = view.findViewById(R.id.recycler_view);
+        Button mButton = view.findViewById(R.id.addButton);
+        challengeText = view.findViewById(R.id.challenge_text);
+        RecyclerView recyclerView = view.findViewById(R.id.recycler_view);
         radioGroup = (RadioGroup) view.findViewById(R.id.challenge_group);
         radioGroup.setOnCheckedChangeListener(this);
 
@@ -66,12 +68,13 @@ public class AddQuestionsFragment extends Fragment implements RadioGroup.OnCheck
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         recyclerView.setAdapter(adapter);
 
+        idUser=getUserId();
         displayDatabase(); // Load data from Room
 
         mButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (t1.getText().toString().trim().isEmpty() || t2 == "") {
+                if (challengeText.getText().toString().trim().isEmpty() || challengeType == null) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
                     builder.setMessage("Unul dintre fielduri e gol.");
                     builder.setTitle("Alert !");
@@ -85,8 +88,8 @@ public class AddQuestionsFragment extends Fragment implements RadioGroup.OnCheck
                     AlertDialog alertDialog = builder.create();
                     alertDialog.show();
                 } else {
-                    String text1 = t1.getText().toString();
-                    Challenge a = new Challenge(text1, t2, idUser);
+                    String text1 = challengeText.getText().toString();
+                    Challenge a = new Challenge(text1, challengeType, idUser);
                     if (existChallenge(a)) {
                         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
                         builder.setMessage("Chellenge already exist.");
@@ -100,14 +103,14 @@ public class AddQuestionsFragment extends Fragment implements RadioGroup.OnCheck
                         });
                         AlertDialog alertDialog = builder.create();
                         alertDialog.show();
-                        t1.setText("");
+                        challengeText.setText("");
                     } else {
                         challenges.add(a);
                         insertChallenge(a);
                     }
 
                     adapter.notifyDataSetChanged();
-                    t1.setText("");
+                    challengeText.setText("");
                     radioGroup.clearCheck();
                 }
             }
@@ -208,12 +211,18 @@ public class AddQuestionsFragment extends Fragment implements RadioGroup.OnCheck
     public void onCheckedChanged(RadioGroup group, int checkedId) {
         switch (checkedId) {
             case R.id.radioButton_dare:
-                t2 = "Dare";
+                challengeType = ChallengeType.Type.Dare;
                 break;
 
             case R.id.radioButton_truth:
-                t2 = "Truth";
+                challengeType = ChallengeType.Type.Truth;
                 break;
         }
     }
+
+    private String getUserId() {
+        SharedPreferences sharedPreferences = requireContext().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+        return sharedPreferences.getString("userId", "");
+    }
+
 }
