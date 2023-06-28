@@ -2,6 +2,9 @@
 using GameAPI.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace GameAPI.Controllers
 {
@@ -26,9 +29,8 @@ namespace GameAPI.Controllers
             return Ok(await _challengesCollectionService.GetAll());
         }
 
-
         ///<summary>
-        ///Get an challenge by user id
+        ///Get a challenge by user id
         ///</summary>
         ///<param name="userId">Introduce the ID</param>
         ///<returns></returns>
@@ -45,16 +47,20 @@ namespace GameAPI.Controllers
             return Ok(challenges);
         }
 
+        /// <summary>
+        /// Add a challenge
+        /// </summary>
+        /// <returns></returns>
 
         [HttpPost]
         public async Task<IActionResult> AddChallenge([FromBody] ChallengeDto challengeDto)
         {
-            if (string.IsNullOrEmpty(challengeDto.Text ))
+            if (string.IsNullOrEmpty(challengeDto.Text))
             {
                 return BadRequest("The text cannot be null");
             }
 
-            Challenge challenge = new (challengeDto.Text,challengeDto.Type,challengeDto.UserId);
+            Challenge challenge = new (challengeDto.Text, challengeDto.Type, challengeDto.UserId);
             var isCreated = await _challengesCollectionService.Create(challenge);
             if (!isCreated)
             {
@@ -63,7 +69,6 @@ namespace GameAPI.Controllers
 
             return CreatedAtAction(nameof(GetChallengeById), new { id = challenge.Id }, challenge);
         }
-
 
         ///<summary>
         ///Get a challenge by id
@@ -84,7 +89,44 @@ namespace GameAPI.Controllers
         }
 
 
+        /// <summary>
+        /// Sync Mongo and room
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("migrateToMongo/{id}")]
+        public async Task<IActionResult> MigrateChallengesToMongo([FromBody] List<ChallengeDto> challengesFromRoom,Guid id)
+        {
+            if (challengesFromRoom == null || challengesFromRoom.Count == 0)
+            {
+                return NoContent(); // No challenges found in the request body
+            }
 
+            // Check if there are any deleted challenges
+            var challengesFromMongo = await _challengesCollectionService.GetAllChallengesByUserId(id);
+            foreach (var challenge in challengesFromMongo)
+            {
+                if (!challengesFromRoom.Exists(c => c.Text == challenge.Text && c.Type == challenge.Type && c.UserId == challenge.UserId))
+                {
+                    await _challengesCollectionService.Delete(challenge.Id);
+                }
+            }
+
+            var synchronizedChallenges = new List<ChallengeDto>();
+
+            foreach (var challenge in challengesFromRoom)
+            {
+                // Check if the challenge already exists in MongoDB
+                var existingChallenge = await _challengesCollectionService.GetByAttributes(challenge.Text, challenge.Type, challenge.UserId);
+                if (existingChallenge == null)
+                {
+                    Challenge newChallenge = new(challenge.Text, challenge.Type, challenge.UserId);
+                    await _challengesCollectionService.Create(newChallenge);
+                }
+
+                synchronizedChallenges.Add(challenge);
+            }
+
+            return Ok(synchronizedChallenges);
+        }
     }
-
 }

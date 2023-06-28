@@ -31,9 +31,9 @@ public interface ChallengeDao {
     @Query("DELETE FROM Challenge")
     void deleteAllChallenges();
 
-    @Query("SELECT * FROM Challenge WHERE type ='2' AND idUser = :userId")
+    @Query("SELECT * FROM Challenge WHERE type ='Dare' AND idUser = :userId")
     List<Challenge> getAllDareChallengesByUser(String userId);
 
-    @Query("SELECT * FROM Challenge WHERE type = '1' AND idUser = :userId")
+    @Query("SELECT * FROM Challenge WHERE type = 'Truth' AND idUser = :userId")
     List<Challenge> getAllTruthChallengesByUser(String userId);
 }

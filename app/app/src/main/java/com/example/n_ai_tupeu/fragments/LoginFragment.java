@@ -14,15 +14,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.example.n_ai_tupeu.R;
 import com.example.n_ai_tupeu.SecondActivity;
-import com.example.n_ai_tupeu.helpers.Constants;
+import com.example.n_ai_tupeu.helpers.VolleyConfigSingleton;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -47,20 +42,10 @@ public class LoginFragment extends Fragment {
         usernameEditText = view.findViewById(R.id.usernameEditText);
         passwordEditText = view.findViewById(R.id.passwordEditText);
 
-        loginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                loginUser();
-            }
-        });
+        loginButton.setOnClickListener(v -> loginUser());
 
 
-        registerButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                navigateToRegister();
-            }
-        });
+        registerButton.setOnClickListener(v -> navigateToRegister());
 
         return view;
     }
@@ -69,43 +54,30 @@ public class LoginFragment extends Fragment {
         String username = usernameEditText.getText().toString().trim();
         String password = passwordEditText.getText().toString().trim();
 
-        // Create a JSON object to hold the username and password
-        JSONObject jsonBody = new JSONObject();
-        try {
-            jsonBody.put(Constants.USERNAME, username);
-            jsonBody.put(Constants.PASSWORD, password);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        // Make the HTTP GET request to the login endpoint
-        String url = Constants.BASE_URL + Constants.GET_ENDPOINT;
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, jsonBody, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                Toast.makeText(requireContext(), "Login successful", Toast.LENGTH_SHORT).show();
-                try {
-                    saveId(response.getString("id"));
-                } catch (JSONException e) {
-                    throw new RuntimeException(e);
-                }
-                saveLogState();
-                Intent intent = new Intent(getActivity(), SecondActivity.class);
-                startActivity(intent);
-                getActivity().finish();
+        // Create successListener and errorListener for the login request
+        Response.Listener<JSONObject> successListener = response -> {
+            Toast.makeText(requireContext(), "Login successful", Toast.LENGTH_SHORT).show();
+            try {
+                saveId(response.getString("id"));
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
             }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                String errorMessage = error.getMessage();
-                Toast.makeText(requireContext(), "Login failed: " + errorMessage, Toast.LENGTH_LONG).show();
-            }
-        });
+            saveLogState();
+            Intent intent = new Intent(getActivity(), SecondActivity.class);
+            startActivity(intent);
+            getActivity().finish();
+        };
 
-        // Add the request to the request queue
-        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
-        requestQueue.add(request);
+        Response.ErrorListener errorListener = error -> {
+            String errorMessage = error.getMessage();
+            Toast.makeText(requireContext(), "Incorrect username or password " + errorMessage, Toast.LENGTH_LONG).show();
+        };
+
+        // Use the VolleyConfigSingleton to make the login request
+        VolleyConfigSingleton volleyConfigSingleton = VolleyConfigSingleton.getInstance(requireContext());
+        volleyConfigSingleton.loginUser(username, password, successListener, errorListener);
     }
+
 
     private void saveId(String id){
         SharedPreferences sharedPreferences = requireContext().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);

@@ -11,32 +11,22 @@ import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.DefaultRetryPolicy;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
-import com.example.n_ai_tupeu.helpers.Constants;
-import com.example.n_ai_tupeu.R;
 
-import org.json.JSONException;
+
+import com.example.n_ai_tupeu.R;
+import com.example.n_ai_tupeu.helpers.VolleyConfigSingleton;
+
 import org.json.JSONObject;
 
-import java.util.HashMap;
-import java.util.Map;
 
 public class RegisterFragment extends Fragment {
     private EditText usernameEditText;
     private EditText passwordEditText;
-    private RequestQueue requestQueue;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestQueue = Volley.newRequestQueue(requireContext());
     }
 
     @Override
@@ -49,19 +39,9 @@ public class RegisterFragment extends Fragment {
         Button registerButton = view.findViewById(R.id.registerButton);
         Button goToLoginButton = view.findViewById(R.id.goToLoginButton);
 
-        registerButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                registerUser();
-            }
-        });
+        registerButton.setOnClickListener(v -> registerUser());
 
-        goToLoginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                navigateToLogin();
-            }
-        });
+        goToLoginButton.setOnClickListener(v -> navigateToLogin());
 
         return view;
     }
@@ -69,35 +49,25 @@ public class RegisterFragment extends Fragment {
     private void registerUser() {
         String username = usernameEditText.getText().toString().trim();
         String password = passwordEditText.getText().toString().trim();
+        if(username.equals("")||password.equals(""))
+            Toast.makeText(requireContext(), "The fields can't be null", Toast.LENGTH_SHORT).show();
 
-        JSONObject requestObject = new JSONObject();
-        try {
-            requestObject.put(Constants.USERNAME, username);
-            requestObject.put(Constants.PASSWORD, password);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, Constants.BASE_URL+Constants.ACCOUNTS_ENDPOINT, requestObject,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        Toast.makeText(requireContext(), "Registration successful", Toast.LENGTH_SHORT).show();
-                        navigateToLogin();
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        String errorMessage = error.getMessage();
-                        Toast.makeText(requireContext(), "Registration failed: " + errorMessage, Toast.LENGTH_LONG).show();
-
-                    }
-                }) {
+        // Create successListener and errorListener for the registration request
+        Response.Listener<JSONObject> successListener = response -> {
+            Toast.makeText(requireContext(), "Registration successful", Toast.LENGTH_SHORT).show();
+            navigateToLogin();
         };
 
-        requestQueue.add(request);
+        Response.ErrorListener errorListener = error -> {
+            String errorMessage = error.getMessage();
+            Toast.makeText(requireContext(), "Registration failed: " + errorMessage, Toast.LENGTH_LONG).show();
+        };
+
+        // Use the VolleyConfigSingleton to make the registration request
+        VolleyConfigSingleton volleyConfigSingleton = VolleyConfigSingleton.getInstance(requireContext());
+        volleyConfigSingleton.registerUser(username, password, successListener, errorListener);
     }
+
 
 
     private void navigateToLogin() {

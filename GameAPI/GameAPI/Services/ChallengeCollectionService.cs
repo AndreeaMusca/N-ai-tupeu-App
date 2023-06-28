@@ -35,6 +35,8 @@ namespace GameAPI.Services
             return isDeleted.IsAcknowledged && isDeleted.DeletedCount > 0;
         }
 
+       
+
         public async Task<Challenge> Get(Guid id)
         {
             return (await _challenges.FindAsync(c=>c.Id==id)).FirstOrDefault();
@@ -60,5 +62,16 @@ namespace GameAPI.Services
             }
             return(existingChallenge.IsAcknowledged&&existingChallenge.MatchedCount>0);
         }
+
+        public async Task<Challenge> GetByAttributes(string text, ChallengeType.Type type, Guid userId)
+        {
+            var filter = Builders<Challenge>.Filter.Eq("Text", text) &
+                         Builders<Challenge>.Filter.Eq("Type", type) &
+                         Builders<Challenge>.Filter.Eq("UserId", userId);
+
+            var challenge = await _challenges.Find(filter).FirstOrDefaultAsync();
+            return challenge;
+        }
+
     }
 }

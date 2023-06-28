@@ -1,4 +1,6 @@
-﻿namespace GameAPI.Models
+﻿using System.Text.Json.Serialization;
+
+namespace GameAPI.Models
 {
     public class Challenge
     {
@@ -12,6 +14,7 @@
 
         public Guid Id { get; set; }
         public string? Text { get; set; }
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public ChallengeType.Type Type {get;set;}
         public Guid UserId { get; set; }
     }
